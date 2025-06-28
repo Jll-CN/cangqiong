@@ -1,0 +1,19 @@
+# **/ ：表示递归匹配任意层级的目录
+# *匹配任意数量的任意字符
+# 文件中的规则按照顺序生效。如果有冲突发生，后定义会覆盖前定义。
+
+# 忽略所有目录下的 target 文件夹（maven）
+**/target/
+
+# 忽略 idea的自动配置文件
+.idea
+*.iml
+
+# 忽略 编译生成的Java类文件
+*.class
+
+# 忽略所有文件名以Test.java结尾的测试文件，例如UserServiceTest.java
+*Test.java
+
+# 忽略所有目录下的test文件夹
+**/test/
