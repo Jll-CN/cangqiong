@@ -1,6 +1,8 @@
 package com.sky.interceptor;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.context.BaseContext;
 import com.sky.properties.JwtProperties;
 import com.sky.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -32,6 +34,10 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
      * @throws Exception
      */
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 输出拦截器的线程 id
+        System.out.println("Jwt 拦截器线程id: " + Thread.currentThread().getId());
+
+
         //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
             //当前拦截到的不是动态方法，直接放行
@@ -45,8 +51,12 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         try {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
+            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString()); // 解析emp id
             log.info("当前员工id：", empId);
+
+            // 存入 ThreadLocal 存储空间
+            BaseContext.setCurrentId(empId);
+
             //3、通过，放行
             return true;
         } catch (Exception ex) {
