@@ -110,4 +110,56 @@ public class EmployeeController {
 
         return Result.success(pageResult);
     }
+
+    // 泛型不是强制的, 针对查询类型的操作，因为需要后端返回data类型的数据，因此就需要将泛型添加上。
+    // 对于其他类型的，非查询的。操作，就不需要了
+
+    /**
+     * /admin/employee/status/1?id=123
+     *  由于 status 参数是一个路径参数，需要使用PathVaribale 注解映射。
+     *  由于id 是通过地址栏的键值对传递的参数，传递时 id=123。对应参数名即可
+     *
+     *  由于路径中的参数名字和 传入的参数都是status。
+     *  如果不一致，需要在PathVariable后面添加小括号，绑定好
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用，禁用员工账号")
+    public Result startOrStop(@PathVariable Integer status, Long id) {
+        log.info("账户启用，禁用: status={}, id={}", status, id);
+
+        // 调用service
+        employeeService.startOrStop(status, id);
+
+        // 操作完，填入参数
+        return Result.success();
+    }
+
+    /**
+     * 根据主键id查询 员工信息，并返回给前端。
+     * 由于employee的不是所有的数据都需要返回给前端，因此可以使用一个自己创建的带有部分关键属性的EmployeeDTO类来返回给前端。
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询员工信息")
+    public Result<Employee> getById(@PathVariable("id") Long id) {
+        log.info("根据主键id查询员工信息. id->{}", id);
+
+        // 调用service，获取EmployeeDTO，传入id
+        Employee employee = employeeService.getById(id);
+
+        return Result.success(employee);
+    }
+
+    @PutMapping("")
+    @ApiOperation("编辑员工信息")
+    public Result updateEmployeeInfo(@RequestBody EmployeeDTO employeeDTO){
+        log.info("编辑员工信息, 新的员工信息->{}", employeeDTO);
+
+        // 调用service的方法，注意参数和返回值。
+        employeeService.updateEmployeeInfo(employeeDTO);
+
+        return Result.success();
+    }
 }

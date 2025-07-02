@@ -34,4 +34,21 @@ public interface EmployeeMapper {
      * @return
      */
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+
+    /**
+     * 根据主键动态修改属性
+     *
+     * 由于是动态的，需要在xml中写
+     * @param employee
+     */
+    void update(Employee employee);
+
+
+    /**
+     * 根据主键id获取用户的数据
+     * @param id
+     * @return
+     */
+    @Select("SELECT * FROM employee WHERE id = #{id}")
+    Employee selectById(Long id);
 }

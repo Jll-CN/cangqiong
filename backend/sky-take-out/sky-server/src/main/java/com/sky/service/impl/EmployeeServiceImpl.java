@@ -132,4 +132,66 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return new PageResult(total, records);
     }
+
+    /**
+     * 员工账户启用，禁用，方法实现
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 思路: 设计一个 status update 的方法，传入id 和 status。仅仅根据id修改status
+
+        // 思路二：写一个完整的update，传入的参数是一个employee, 后续可以复用。
+//        Employee employee = new Employee();
+//        employee.setId(id);
+//        employee.setStatus(status);
+
+        // 由于 employee 有一个Build注解，因此可以使用这种构造器
+        // 流编程, 每一种更新都需要更新数据的更新时间和更新人
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .updateTime(LocalDateTime.now())
+                .updateUser(BaseContext.getCurrentId())
+                .build();
+
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据员工id查询信息实现
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee getById(Long id) {
+
+        // 先使用mapper 得到employee的对象，
+        Employee employee = employeeMapper.selectById(id);
+        // 由于取到密码，因此需要隐藏
+        employee.setPassword("*******");
+
+        return employee;
+    }
+
+    /**
+     * 根据id 更新员工信息实现
+     * @param employeeDTO
+     */
+    @Override
+    public void updateEmployeeInfo(EmployeeDTO employeeDTO) {
+        // 将 employeeDTO -> employee
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);    // 将employeeDTO 的属性拷贝给 employee
+
+        // 更新时间和操作人
+        employee.setUpdateTime(LocalDateTime.now());
+
+        Long tempId = BaseContext.getCurrentId();
+        employee.setUpdateUser(tempId);
+
+        // 调用update方法
+        employeeMapper.update(employee);
+    }
 }
