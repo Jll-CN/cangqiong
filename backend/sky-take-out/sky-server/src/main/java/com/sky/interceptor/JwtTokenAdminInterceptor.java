@@ -52,7 +52,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             log.info("jwt校验:{}", token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
             Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString()); // 解析emp id
-            log.info("当前员工id：", empId);
+            log.info("当前员工id = {}", empId);
 
             // 存入 ThreadLocal 存储空间
             BaseContext.setCurrentId(empId);
